@@ -56,10 +56,7 @@ class AmqLibConnect
     }
 
     public function get() {
-
-        $result = ($this->channel->basic_get('my_queue', true, null)->body);
-
-        return $result;
+        return ($this->channel->basic_get('my_queue', true, null)->body);
     }
 
 }

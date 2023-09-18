@@ -1,6 +1,6 @@
 <?php
 
-class DbConnect
+class DbConnectMaria
 {
 
     private $table = 'urls';
@@ -17,76 +17,58 @@ class DbConnect
         $user = 'myuser';
         $password = 'mypassword';
         $database = 'mydatabase';
-
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
         $this->connect = new mysqli($host, $user, $password, $database);
-
         $this->connect->set_charset('utf8mb4');
-
         printf("Success... %s\n", $this->connect->host_info);
     }
 
-    function create($url, $length)
+    function create($url, $length, $time)
     {
-        // Insert a new row into the table
-        $sql = "INSERT INTO $this->table (url,length,timestamp) VALUES ('" . $url . "', '" . $length . "', ".microtime(true).")";
-        return mysqli_query($this->connect,$sql);
+        $sql = "INSERT INTO $this->table (url,length,timestamp) VALUES ('" . $url . "', '" . $length . "', " . $time . ")";
+        return mysqli_query($this->connect, $sql);
     }
 
-    function read($url = null)
+    private function migrate()
     {
-        // Select one or all rows from the table
-        if ($url) {
-            $sql = "SELECT * FROM $this->table WHERE url = $url";
-        } else {
-            $sql = "SELECT * FROM $this->table";
-        }
-        $result = mysqli_query($sql);
-        $rows = array();
-        while ($row = mysqli_fetch_assoc($result)) {
-            $rows[] = $row;
-        }
-        return $rows;
-    }
-
-    function update($id, $length)
-    {
-        // Update an existing row in the table
-        $sql = "UPDATE $this->table SET length = '" . $length . "' WHERE id = $id";
-        return mysqli_query($sql);
-    }
-
-    function delete($id)
-    {
-        // Delete an existing row from the table
-        $sql = "DELETE FROM $this->table WHERE id = $id";
-        return mysqli_query($sql);
-    }
-
-
-    private function migrate() {
         $sql = "CREATE TABLE $this->table
-    (
-    id        int auto_increment,
-    url       text                                 null,
-    length    bigint                               null,
-    timestamp varchar(50)                          null,
-    date      datetime default current_timestamp() null,
-        unique (id)
-);";
-        return mysqli_query($this->connect,$sql);
+                    (
+                    id        int auto_increment,
+                    url       text                                 null,
+                    length    bigint                               null,
+                    timestamp varchar(50)                          null,
+                    date      datetime default current_timestamp() null,
+                        unique (id)
+                );
+        ";
+        return mysqli_query($this->connect, $sql);
     }
-    public function checkMigration(){
 
+    private function drop()
+    {
+        $sql = "DROP TABLE $this->table";
+        return mysqli_query($this->connect, $sql);
+    }
+
+    public function checkMigration($drop = false)
+    {
+        if ($drop) {
+            $this->drop();
+        }
         $query = "SHOW TABLES LIKE '$this->table'";
         $result = $this->connect->query($query);
 
         if ($result->num_rows > 0) {
-            echo "Table '$this->table' exists in database database.";
+            echo "Table '$this->table' exists in database database.\n";
         } else {
-            echo "Table '$this->table' does not exist in database database.";
+            echo "Table '$this->table' does not exist in database database.\n";
             $this->migrate();
         }
+    }
+
+    public function selectAverageLength(){
+        $query = "SELECT avg(length) FROM $this->table";
+        $result = $this->connect->query($query);
+        return $result->fetch_assoc()['avg(length)'];
     }
 }

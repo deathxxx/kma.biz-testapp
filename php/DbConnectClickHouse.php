@@ -29,16 +29,39 @@ class DbConnectClickHouse
         ]);
     }
 
-    public function migrate() {
-//        $this->client->write('DROP TABLE IF EXISTS ' . $this->table);
-        $this->client->write('CREATE TABLE ' . $this->table . ' (url String, length Int32) ENGINE = Memory');
+    private function migrate() {
+        $this->client->write('CREATE TABLE ' . $this->table . ' (url String, length Int32, timestamp String, date Nullable(DateTime) default now()) ENGINE = Memory');
     }
 
-    public function create($url, $length)
+    private function drop() {
+        $this->client->write('DROP TABLE IF EXISTS ' . $this->table);
+    }
+
+    public function create($url, $length, $time)
     {
         $this->client->insert($this->table, [
-            [$url, $length]
+            [$url, $length, $time, microtime(true)]
         ]);
+    }
+
+    public function checkMigration($drop = false){
+        if ($drop) {
+            $this->drop();
+        }
+        $query = "SELECT 1 FROM system.tables WHERE database = 'default' AND name = '$this->table'";
+        $result = $this->client->select($query);
+        if ($result->fetchOne() > 0) {
+            echo "Table 'urls' exists in database 'default'.\n";
+        } else {
+            echo "Table 'urls' does not exist in database 'default'.\n";
+            $this->migrate();
+        }
+    }
+
+    public function selectAverageLength(){
+        $query = "SELECT avg(length) FROM $this->table";
+        $result = $this->client->select($query);
+        return $result->fetchOne();
     }
 
 
