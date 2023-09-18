@@ -58,8 +58,16 @@ class DbConnectClickHouse
         }
     }
 
-    public function selectAverageLength(){
-        $query = "SELECT avg(length) FROM $this->table";
+    public function report(){
+        $query = "SELECT
+                   COUNT(*) AS count,
+                   DATE_FORMAT(date, '%Y-%m-%d %H:%i') AS grouped_minutes,
+                   AVG(length) AS avg_integer,
+                   MIN(date) AS first_datetime,
+                   MAX(date) AS last_datetime
+            FROM mydatabase.urls
+            GROUP BY grouped_minutes
+            ORDER BY grouped_minutes;";
         $result = $this->client->select($query);
         return $result->fetchOne();
     }

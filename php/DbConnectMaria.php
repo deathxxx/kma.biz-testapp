@@ -20,7 +20,7 @@ class DbConnectMaria
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         $this->connect = new mysqli($host, $user, $password, $database);
         $this->connect->set_charset('utf8mb4');
-        printf("Success... %s\n", $this->connect->host_info);
+//        printf("Success... %s\n", $this->connect->host_info);
     }
 
     function create($url, $length, $time)
@@ -59,16 +59,28 @@ class DbConnectMaria
         $result = $this->connect->query($query);
 
         if ($result->num_rows > 0) {
-            echo "Table '$this->table' exists in database database.\n";
+//            echo "Table '$this->table' exists in database database.\n";
         } else {
-            echo "Table '$this->table' does not exist in database database.\n";
+//            echo "Table '$this->table' does not exist in database database.\n";
             $this->migrate();
         }
     }
 
-    public function selectAverageLength(){
-        $query = "SELECT avg(length) FROM $this->table";
+    public function report(){
+        $query = "SELECT
+                   COUNT(*) AS count,
+                   DATE_FORMAT(date, '%Y-%m-%d %H:%i') AS grouped_minutes,
+                   AVG(length) AS avg_length,
+                   MIN(date) AS first_datetime,
+                   MAX(date) AS last_datetime
+            FROM mydatabase.urls
+            GROUP BY grouped_minutes
+            ORDER BY grouped_minutes;";
         $result = $this->connect->query($query);
-        return $result->fetch_assoc()['avg(length)'];
+//        return $result->fetch_assoc()['avg(length)'];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        return $data;
     }
 }

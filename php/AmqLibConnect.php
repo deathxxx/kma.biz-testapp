@@ -59,4 +59,12 @@ class AmqLibConnect
         return ($this->channel->basic_get('my_queue', true, null)->body);
     }
 
+    public function listen(&$callback) {
+
+
+// Consume messages from the queue
+        $this->channel->basic_consume('my_queue', '', false, true, false, false, $callback);
+
+        return $this->channel;
+    }
 }

@@ -1,15 +1,7 @@
 <?php
+
 require_once __DIR__ . '/vendor/autoload.php';
-require_once 'DbConnectMaria.php';
-require_once 'DbConnectClickHouse.php';
-require_once 'RequestUrl.php';
 require_once 'AmqLibConnect.php';
-
-ini_set('display_errors', 1);
-
-//echo isset($_SERVER['REMOTE_ADDR']) ? "<html><head></head><body><pre>\n" : "";
-
-
 
 /**
  * 1) make ursl array
@@ -41,25 +33,4 @@ foreach ($urls as $url) {
     $am->send($url);
     echo $timeout . "\n";
 
-    /**
-     * 3) get urls from queue
-     * and make request to urls -get content length
-     * and save to db
-     */
-    $arrResp = [];
-    while (($resp = $am->get()) !== null) {
-        $arrResp[] = $resp;
-    }
-    $curlRequest = new RequestUrl;
-    $curlResp = $curlRequest->execute($url);
-
-    $time = microtime(true);
-    $maria->create($curlResp['url'], $curlResp['response_length'], $time);
-    $clickhouse->create($curlResp['url'], $curlResp['response_length'], $time);
-
-
 }
-
-
-
-echo isset($_SERVER['REMOTE_ADDR']) ? "</pre></body></html>\n" : "";
