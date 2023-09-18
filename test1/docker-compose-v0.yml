@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  phpserv_fpm:
+    image: php:8.2-fpm
+    ports:
+      - "8080:80"
+    volumes:
+      - ./php:/var/www/html
+    environment:
+      - DB_HOST=mariadb
+      - DB_NAME=mydatabase
+      - DB_USER=myuser
+      - DB_PASSWORD=mypassword
+
+  mariadb:
+    image: mariadb:10.5
+    environment:
+      - MYSQL_ROOT_PASSWORD=mypassword
+      - MYSQL_DATABASE=mydatabase
+      - MYSQL_USER=myuser
+      - MYSQL_PASSWORD=mypassword
+    volumes:
+      - ./mariadb:/var/lib/mysql
+
+  clickhouse:
+    image: yandex/clickhouse-server:21.3
+    ports:
+      - "8123:8123"
+    volumes:
+      - ./clickhouse:/var/lib/clickhouse
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq

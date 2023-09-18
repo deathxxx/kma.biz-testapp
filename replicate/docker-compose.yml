@@ -1,0 +1,77 @@
+version: '3'
+services:
+  mariadb:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: mydatabase
+    volumes:
+      - ./mariadb/data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - my-network
+
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    volumes:
+      - ./clickhouse/data:/var/lib/clickhouse
+      - ./clickhouse/config.xml:/etc/clickhouse-server/config.xml
+    ports:
+      - "8123:8123"
+      - "9000:9002"
+    networks:
+      - my-network
+
+  kafka:
+    image: confluentinc/cp-kafka:5.5.0
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    networks:
+      - my-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+    networks:
+      - my-network
+
+  connect:
+    image: confluentinc/cp-kafka-connect:5.5.0
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: my-group
+      CONNECT_CONFIG_STORAGE_TOPIC: my-config
+      CONNECT_OFFSET_STORAGE_TOPIC: my-offsets
+      CONNECT_STATUS_STORAGE_TOPIC: my-status
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_PLUGIN_PATH: /usr/share/java
+      CONNECT_REST_ADVERTISED_PORT: 8083
+      CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
+      CONNECT_LOG4J_LOGGERS: org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR
+    volumes:
+      - ./connect/plugins:/usr/share/java/plugins
+      - ./connect/config:/config
+    depends_on:
+      - kafka
+      - zookeeper
+    ports:
+      - "8083:8083"
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge
