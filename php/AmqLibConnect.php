@@ -57,19 +57,9 @@ class AmqLibConnect
 
     public function get() {
 
-        $arr = [];
-        // Consume the message
-        $this->channel->basic_consume('my_queue', '', false, true, false, false, function ($message) {
-            echo "Received ", $message->body, "\n";
-            $arr[] = $message->body;
-        });
+        $result = ($this->channel->basic_get('my_queue', true, null)->body);
 
-        // Loop as long as the channel has callbacks registered
-        while (count($this->channel->callbacks)) {
-            $this->channel->wait();
-        }
-
-        return $arr;
+        return $result;
     }
 
 }

@@ -55,6 +55,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'smi2/phpclickhouse' => array(
+            'pretty_version' => '1.5.1',
+            'version' => '1.5.1.0',
+            'reference' => '14606e47fa7208e58976569e223f02fe719b4cd9',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../smi2/phpclickhouse',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'videlalvaro/php-amqplib' => array(
             'dev_requirement' => false,
             'replaced' => array(

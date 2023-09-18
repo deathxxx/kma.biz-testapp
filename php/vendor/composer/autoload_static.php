@@ -20,6 +20,10 @@ class ComposerStaticInit2a6a297dea2489a74addaac5801e1375
             'PhpAmqpLib\\' => 11,
             'ParagonIE\\ConstantTime\\' => 23,
         ),
+        'C' => 
+        array (
+            'ClickHouseDB\\' => 13,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -34,6 +38,10 @@ class ComposerStaticInit2a6a297dea2489a74addaac5801e1375
         'ParagonIE\\ConstantTime\\' => 
         array (
             0 => __DIR__ . '/..' . '/paragonie/constant_time_encoding/src',
+        ),
+        'ClickHouseDB\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/smi2/phpclickhouse/src',
         ),
     );
 

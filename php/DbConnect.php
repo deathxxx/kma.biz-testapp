@@ -4,6 +4,7 @@ class DbConnect
 {
 
     private $table = 'urls';
+    private $connect;
 
     public function __construct()
     {
@@ -12,27 +13,25 @@ class DbConnect
 
     public function connect()
     {
-// Set up the database connection
-        $host = 'localhost';
+        $host = '173.25.0.4';
         $user = 'myuser';
         $password = 'mypassword';
         $database = 'mydatabase';
 
-// Set up the connection
-        $connection = mysqli_connect($host, $user, $password);
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-// Select the database
-        mysqli_select_db($database, $connection);
+        $this->connect = new mysqli($host, $user, $password, $database);
+
+        $this->connect->set_charset('utf8mb4');
+
+        printf("Success... %s\n", $this->connect->host_info);
     }
-
-// Define the CRUD functions
-
 
     function create($url, $length)
     {
         // Insert a new row into the table
-        $sql = "INSERT INTO $this->table (url,length) VALUES ('" . $url . "', '" . $length . "')";
-        return mysqli_query($sql);
+        $sql = "INSERT INTO $this->table (url,length,timestamp) VALUES ('" . $url . "', '" . $length . "', ".microtime(true).")";
+        return mysqli_query($this->connect,$sql);
     }
 
     function read($url = null)
@@ -65,4 +64,29 @@ class DbConnect
         return mysqli_query($sql);
     }
 
+
+    private function migrate() {
+        $sql = "CREATE TABLE $this->table
+    (
+    id        int auto_increment,
+    url       text                                 null,
+    length    bigint                               null,
+    timestamp varchar(50)                          null,
+    date      datetime default current_timestamp() null,
+        unique (id)
+);";
+        return mysqli_query($this->connect,$sql);
+    }
+    public function checkMigration(){
+
+        $query = "SHOW TABLES LIKE '$this->table'";
+        $result = $this->connect->query($query);
+
+        if ($result->num_rows > 0) {
+            echo "Table '$this->table' exists in database database.";
+        } else {
+            echo "Table '$this->table' does not exist in database database.";
+            $this->migrate();
+        }
+    }
 }
