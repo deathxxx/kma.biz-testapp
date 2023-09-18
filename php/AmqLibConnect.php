@@ -23,26 +23,17 @@ class AmqLibConnect
 
     public function connect()
     {
-
-
         // Set up the connection to RabbitMQ
         $this->connection = new AMQPStreamConnection('173.25.0.6', 5672, 'guest', 'guest');
         $this->channel = $this->connection->channel();
 
         // Declare the queue
         $this->channel->queue_declare('my_queue', false, true, false, false);
-
-
-
-//        echo "Connected RabbitMQ\n";
     }
 
     public function disconnect() {
-        // Close the connection
         $this->channel->close();
         $this->connection->close();
-
-//        echo "Close RabbitMQ\n";
     }
 
     public function send($url) {
@@ -60,9 +51,6 @@ class AmqLibConnect
     }
 
     public function listen(&$callback) {
-
-
-// Consume messages from the queue
         $this->channel->basic_consume('my_queue', '', false, true, false, false, $callback);
 
         return $this->channel;

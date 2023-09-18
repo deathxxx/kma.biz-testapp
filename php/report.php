@@ -23,7 +23,7 @@ $result = $maria->report();
 
 </head>
 <body>
-<div class="container">
+<div class="container d-none">
     <h1>Grouped result</h1>
     <div class="container-md">
         <div class="card mb-2">
@@ -71,6 +71,8 @@ $result = $maria->report();
         ?>
         </div>
     </div>
+</div>
+<div class="container">
     <h1>Grouped result table</h1>
     <div class="container-md">
         <table class="table">

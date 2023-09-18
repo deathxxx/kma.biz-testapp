@@ -58,10 +58,7 @@ class DbConnectMaria
         $query = "SHOW TABLES LIKE '$this->table'";
         $result = $this->connect->query($query);
 
-        if ($result->num_rows > 0) {
-//            echo "Table '$this->table' exists in database database.\n";
-        } else {
-//            echo "Table '$this->table' does not exist in database database.\n";
+        if ($result->num_rows === 0) {
             $this->migrate();
         }
     }
@@ -77,10 +74,19 @@ class DbConnectMaria
             GROUP BY grouped_minutes
             ORDER BY grouped_minutes;";
         $result = $this->connect->query($query);
-//        return $result->fetch_assoc()['avg(length)'];
         while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
         return $data;
+    }
+
+    public function close()
+    {
+//        mysqli_close($this->connect);
+    }
+
+    public function __destruct()
+    {
+        $this->close();
     }
 }

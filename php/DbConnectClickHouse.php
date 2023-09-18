@@ -50,10 +50,7 @@ class DbConnectClickHouse
         }
         $query = "SELECT 1 FROM system.tables WHERE database = 'default' AND name = '$this->table'";
         $result = $this->client->select($query);
-        if ($result->fetchOne() > 0) {
-            echo "Table 'urls' exists in database 'default'.\n";
-        } else {
-            echo "Table 'urls' does not exist in database 'default'.\n";
+        if ($result->fetchOne() === 0) {
             $this->migrate();
         }
     }
@@ -72,5 +69,14 @@ class DbConnectClickHouse
         return $result->fetchOne();
     }
 
+    public function close()
+    {
+//        $this->client->disconnect();
+    }
+
+    public function __destruct()
+    {
+        $this->close();
+    }
 
 }
