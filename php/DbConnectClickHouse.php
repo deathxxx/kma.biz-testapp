@@ -50,7 +50,8 @@ class DbConnectClickHouse
         }
         $query = "SELECT 1 FROM system.tables WHERE database = 'default' AND name = '$this->table'";
         $result = $this->client->select($query);
-        if ($result->fetchOne() === 0) {
+        if ($result->fetchOne() > 0) {
+        } else {
             $this->migrate();
         }
     }
