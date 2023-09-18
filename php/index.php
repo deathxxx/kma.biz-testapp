@@ -1,65 +1,45 @@
-<?php
-require_once __DIR__ . '/vendor/autoload.php';
-require_once 'DbConnectMaria.php';
-require_once 'DbConnectClickHouse.php';
-require_once 'RequestUrl.php';
-require_once 'AmqLibConnect.php';
-
-ini_set('display_errors', 1);
-
-//echo isset($_SERVER['REMOTE_ADDR']) ? "<html><head></head><body><pre>\n" : "";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap 5 Grid Example</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
 
+</head>
+<body>
+<div class="container">
+    <h1>Test app kma.biz</h1>
+    <div class="container-md">
+        <div class="card mb-2">
+            <div class="row">
+                <div class="col">
+                    <a href="init.php" target="_blank">1) Inti system create (recreate database)</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a href="send.php" target="_blank">2) Send to queue (RabitMQ) </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a href="queue.php" target="_blank">3) Await messages from queue (RabitMQ) actualy you need to run it from console</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a href="report.php" target="_blank">4) Open report </a>
+                </div>
 
-/**
- * 1) make ursl array
- */
-$urls = [
-    'https://example.com/',
-    'https://www.youtube.com/watch?v=mWNm-CIbHv8',
-    'https://2gis.kg/bishkek/geo/70030076170260091/74.619367%2C42.846491?m=74.625229%2C42.845397%2F15.28',
-    'https://www.o.kg/kg/chastnym-klientam/',
-    'https://formulae.brew.sh/formula/telnet',
-    'https://www.lazyvim.org/keymaps',
-    'https://symfony.com/doc/current/setup/docker.html',
-    'https://docs.portainer.io/start/install-ce/server/docker/linux',
-    'https://hub.docker.com/r/portainer/portainer/tags?page=1&ordering=-name',
-    'https://hub.docker.com/layers/portainer/portainer/1.25.0/images/sha256-88166e7da037129e27df224f76954255309e7990517b220abd30f32eeb4fda78?context=explore'
-];
+            </div>
+        </div>
+</div>
 
-
-
-
-$am = new  AmqLibConnect();
-
-foreach ($urls as $url) {
-    /**
-     * 2) put urls to queue with delay
-     */
-    $timeout = mt_rand(5, 30); // Generate a random timeout between 5 and 30 seconds
-    sleep($timeout); // Sleep for the random timeout
-    $am->send($url);
-    echo $timeout . "\n";
-
-    /**
-     * 3) get urls from queue
-     * and make request to urls -get content length
-     * and save to db
-     */
-    $arrResp = [];
-    while (($resp = $am->get()) !== null) {
-        $arrResp[] = $resp;
-    }
-    $curlRequest = new RequestUrl;
-    $curlResp = $curlRequest->execute($url);
-
-    $time = microtime(true);
-    $maria->create($curlResp['url'], $curlResp['response_length'], $time);
-    $clickhouse->create($curlResp['url'], $curlResp['response_length'], $time);
-
-
-}
-
-
-
-echo isset($_SERVER['REMOTE_ADDR']) ? "</pre></body></html>\n" : "";
+<!-- Include Bootstrap JS and jQuery (optional) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+</body>
+</html>

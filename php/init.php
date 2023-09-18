@@ -7,7 +7,7 @@ require_once 'DbConnectClickHouse.php';
 /**
  * 0) init - check if databases exists
  */
-$drop = true;
+$drop = false;
 
 $maria = new DbConnectMaria();
 $maria->checkMigration($drop);
