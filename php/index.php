@@ -36,7 +36,11 @@
 
             </div>
         </div>
+    </div>
 </div>
+
+
+<div class="container">
 
 <!-- Include Bootstrap JS and jQuery (optional) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>

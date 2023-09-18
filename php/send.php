@@ -28,7 +28,7 @@ foreach ($urls as $url) {
     /**
      * 2) put urls to queue with delay
      */
-    $timeout = mt_rand(0, 1); // Generate a random timeout between 5 and 30 seconds
+    $timeout = mt_rand(5, 30); // Generate a random timeout between 5 and 30 seconds
     sleep($timeout); // Sleep for the random timeout
     $am->send($url);
     echo $timeout . "\n";
